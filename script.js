@@ -10,12 +10,11 @@ let state = {
 const formatDateKey = (m, d, y) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
 const getMemberForDate = (date) => {
-    const diffTime = date - ROSTER_START_DATE;
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const start = new Date(ROSTER_START_DATE).setHours(0, 0, 0, 0);
+    const target = new Date(date).setHours(0, 0, 0, 0);
 
-    if (diffDays < 0) return '';
-
-    return MEMBERS[diffDays % MEMBERS.length];
+    const diffDays = Math.floor((target - start) / (1000 * 60 * 60 * 24));
+    return diffDays >= 0 ? MEMBERS[diffDays % MEMBERS.length] : '';
 };
 
 function renderCalendar() {

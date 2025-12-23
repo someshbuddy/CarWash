@@ -7,7 +7,6 @@ let state = {
     currentYear: new Date().getFullYear()
 };
 
-
 const formatDateKey = (m, d, y) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
 const getMemberForDate = (date) => {
@@ -27,42 +26,40 @@ function renderCalendar() {
     if (!calendarDates || !title) return;
 
     title.textContent = `${MONTHS[currentMonth - 1]} ${currentYear}`;
+
+    const fragment = document.createDocumentFragment();
     calendarDates.innerHTML = '';
 
     const firstDayIndex = new Date(currentYear, currentMonth - 1, 1).getDay();
     const lastDayIndex = new Date(currentYear, currentMonth, 0).getDate();
 
-    let totalCells = lastDayIndex + firstDayIndex;
-    totalCells = totalCells % 7 != 0 ? Math.floor(totalCells / 7) * 7 + 7 : totalCells;
+    const totalCells = Math.ceil((firstDayIndex + lastDayIndex) / 7) * 7;
 
     for (let i = 0; i < totalCells; i++) {
         const cellDate = new Date(currentYear, currentMonth - 1, 1 - firstDayIndex + i);
-
-        const dayNum = cellDate.getDate();
-        const monthNum = cellDate.getMonth() + 1;
-        const yearNum = cellDate.getFullYear();
-
-        let className = "day";
-        if (monthNum < currentMonth || (monthNum === 12 && currentMonth === 1)) className += " prevDay";
-        if (monthNum > currentMonth || (monthNum === 1 && currentMonth === 12)) className += " nextDay";
-        if (cellDate.toDateString() === new Date().toDateString()) className += " current-day";
-
-        calendarDates.appendChild(createDayElement(dayNum, monthNum, yearNum, className));
+        fragment.appendChild(createDayElement(cellDate));
     }
+
+    calendarDates.appendChild(fragment);
 }
 
-function createDayElement(dayNum, m, y, className) {
+const createDayElement = (date) => {
     const dayDiv = document.createElement('div');
-    dayDiv.className = className;
+    const isToday = date.toDateString() === new Date().toDateString();
+    const isCurrentMonth = date.getMonth() + 1 === state.currentMonth;
 
-    const memberName = getMemberForDate(new Date(y, m - 1, dayNum));
+    dayDiv.className = [
+        'day',
+        !isCurrentMonth ? (date < new Date(state.currentYear, state.currentMonth - 1, 1) ? 'prevDay' : 'nextDay') : '',
+        isToday ? 'current-day' : ''
+    ].filter(Boolean).join(' ');
 
     dayDiv.innerHTML = `
-        <span class="date-num">${dayNum}</span>
-        <span class="member-name">${memberName}</span>
+        <span class="date-num">${date.getDate()}</span>
+        <span class="member-name">${getMemberForDate(date)}</span>
     `;
     return dayDiv;
-}
+};
 
 function changeMonth(delta) {
     state.currentMonth += delta;

@@ -1,108 +1,94 @@
-const members = ["Somesh", "Dinesh", "Divakar", "Vijay", "Dinakar", "Bhaskar", "Aditya"];
-const monthsArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const datesMap = new Map();
+const MEMBERS = ["Somesh", "Dinesh", "Divakar", "Vijay", "Dinakar", "Bhaskar", "Aditya"];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const ROSTER_START_DATE = new Date(2025, 11, 21);
+
+let state = {
+    currentMonth: new Date().getMonth() + 1,
+    currentYear: new Date().getFullYear()
+};
+
 
 const formatDateKey = (m, d, y) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
-// Initialize Data
-const dayStarts = 21;
-const monthStarts = 11; // December (0-indexed for Date object)
-let startDate = new Date(2025, monthStarts, dayStarts);
+const getMemberForDate = (date) => {
+    const diffTime = date - ROSTER_START_DATE;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-for (let i = 0; i < 365; i++) {
-    let nextDay = new Date(startDate);
-    nextDay.setDate(startDate.getDate() + i);
-    const key = formatDateKey(nextDay.getMonth() + 1, nextDay.getDate(), nextDay.getFullYear());
-    datesMap.set(key, members[i % members.length]);
-}
+    if (diffDays < 0) return '';
 
-function renderCalendar(month, year) {
-    const calendarDates = document.getElementById('calendarDates'); // Ensure ID exists
-    setDate(month, year);
+    return MEMBERS[diffDays % MEMBERS.length];
+};
+
+function renderCalendar() {
+    const { currentMonth, currentYear } = state;
+    const calendarDates = document.getElementById('calendarDates');
+    const title = document.getElementById("dateId");
+
+    if (!calendarDates || !title) return;
+
+    title.textContent = `${MONTHS[currentMonth - 1]} ${currentYear}`;
     calendarDates.innerHTML = '';
 
-    // Calculation logic
-    const firstDayIndex = new Date(year, month - 1, 1).getDay(); // 0 = Sun, 1 = Mon
-    const daysInMonth = new Date(year, month, 0).getDate();
-    const daysInPastMonth = new Date(year, month - 1, 0).getDate();
+    const firstDayIndex = new Date(currentYear, currentMonth - 1, 1).getDay();
+    const lastDayIndex = new Date(currentYear, currentMonth, 0).getDate();
 
-    // 1. PREVIOUS MONTH DAYS
-    let count = 0;
-    for (let i = firstDayIndex; i > 0; i--) {
-        count++;
-        const prevDayNum = daysInPastMonth - i + 1;
-        const prevMonth = month === 1 ? 12 : month - 1;
-        const prevYear = month === 1 ? year - 1 : year;
+    let totalCells = lastDayIndex + firstDayIndex;
+    totalCells = totalCells % 7 != 0 ? Math.floor(totalCells / 7) * 7 + 7 : totalCells;
 
-        const day = createDayElement(prevDayNum, prevMonth, prevYear, "prevDay");
-        calendarDates.appendChild(day);
-    }
+    for (let i = 0; i < totalCells; i++) {
+        const cellDate = new Date(currentYear, currentMonth - 1, 1 - firstDayIndex + i);
 
-    // 2. CURRENT MONTH DAYS
-    for (let i = 1; i <= daysInMonth; i++) {
-        count++;
-        const isToday = (new Date().getDate() === i && new Date().getMonth() + 1 === month && new Date().getFullYear() === year);
-        const day = createDayElement(i, month, year, isToday ? "current-day" : "");
-        calendarDates.appendChild(day);
-    }
+        const dayNum = cellDate.getDate();
+        const monthNum = cellDate.getMonth() + 1;
+        const yearNum = cellDate.getFullYear();
 
-    // 3. NEXT MONTH DAYS (Fill grid to 42 cells for consistent height)
-    const remainingSlots = (42 - count) % 7;
-    for (let i = 1; i <= remainingSlots; i++) {
-        const nextMonth = month === 12 ? 1 : month + 1;
-        const nextYear = month === 12 ? year + 1 : year;
+        let className = "day";
+        if (monthNum < currentMonth || (monthNum === 12 && currentMonth === 1)) className += " prevDay";
+        if (monthNum > currentMonth || (monthNum === 1 && currentMonth === 12)) className += " nextDay";
+        if (cellDate.toDateString() === new Date().toDateString()) className += " current-day";
 
-        const day = createDayElement(i, nextMonth, nextYear, "nextDay");
-        calendarDates.appendChild(day);
+        calendarDates.appendChild(createDayElement(dayNum, monthNum, yearNum, className));
     }
 }
 
-// Helper to build the DOM element
-function createDayElement(dayNum, m, y, extraClass) {
+function createDayElement(dayNum, m, y, className) {
     const dayDiv = document.createElement('div');
-    dayDiv.classList.add("day");
-    if (extraClass) dayDiv.classList.add(extraClass);
+    dayDiv.className = className;
 
-    const key = formatDateKey(m, dayNum, y);
-    const memberName = datesMap.get(key) || '';
+    const memberName = getMemberForDate(new Date(y, m - 1, dayNum));
 
-    dayDiv.innerHTML = `<span class="date-num">${dayNum}</span><span class="member-name">${memberName}</span>`;
+    dayDiv.innerHTML = `
+        <span class="date-num">${dayNum}</span>
+        <span class="member-name">${memberName}</span>
+    `;
     return dayDiv;
 }
 
-function setDate(index, year) {
-    document.getElementById("dateId").innerHTML = monthsArray[(index - 1)] + " " + year;
+function changeMonth(delta) {
+    state.currentMonth += delta;
+    if (state.currentMonth > 12) {
+        state.currentMonth = 1;
+        state.currentYear++;
+    } else if (state.currentMonth < 1) {
+        state.currentMonth = 12;
+        state.currentYear--;
+    }
+    renderCalendar();
 }
 
-// Execution
-let currentYear = 0;
-let currentMonth = 0;
-
 function prev() {
-    currentMonth--;
-    if (currentMonth == 0) {
-        currentMonth = 12;
-        currentYear--;
-    }
-    renderCalendar(currentMonth, currentYear);
+    changeMonth(-1);
 }
 
 function next() {
-    console.log(currentMonth)
-    currentMonth++;
-    if (currentMonth == 13) {
-        currentMonth = 1;
-        currentYear++;
-    }
-    renderCalendar(currentMonth, currentYear);
-
+    changeMonth(1);
 }
 
 function currentStatus() {
-    let currentDate = new Date();
-    currentYear = currentDate.getFullYear();
-    currentMonth = currentDate.getMonth() + 1;
-    renderCalendar(currentMonth, currentYear);
+    const today = new Date();
+    state.currentMonth = today.getMonth() + 1;
+    state.currentYear = today.getFullYear();
+    renderCalendar();
 }
 
-currentStatus();
+document.addEventListener('DOMContentLoaded', renderCalendar);

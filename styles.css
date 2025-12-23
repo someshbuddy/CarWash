@@ -61,7 +61,6 @@
 .current-day {
     background-color: #94c0ec;
     font-weight: bold;
-    color: #007bff;
 }
 
 .event-dot {
@@ -77,32 +76,17 @@
     cursor: default;
 }
 
+.centerBtn,
 .prevBtn,
 .nextBtn {
+    font-size: xx-large;
     float: 10%;
     height: 40px;
     width: 200px;
     background-color: beige;
     color: blueviolet;
-    font: status-bar;
     font-family: monospace;
     font-weight: 700;
-}
-
-.centerBtn {
-    height: 40px;
-    width: 200px;
-    background-color: beige;
-    color: blueviolet;
-    font: status-bar;
-    font-family: monospace;
-    font-weight: 700;
-}
-
-
-
-.prevBtn {
-    float: 90%;
 }
 
 .button-container {
@@ -111,4 +95,16 @@
     align-items: center;
     width: 100%;
     padding: 10px 0;
+}
+
+
+.date-num {
+    color: blue;
+    font-weight: 700;
+    font-size: x-large;
+}
+
+.member-name {
+    color: darkgreen;
+    font-size: larger;
 }

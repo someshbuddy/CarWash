@@ -1,0 +1,78 @@
+.month-calendar {
+    max-width: 800px;
+    margin: 20px auto;
+    font-family: 'Segoe UI', sans-serif;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.calendar-header {
+    background: #007bff;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    /* Exactly 7 columns */
+    background-color: #fff;
+}
+
+.day-label {
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: #888;
+    padding: 10px 0;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.day {
+    aspect-ratio: 1 / 1;
+    background-color: aliceblue;
+    /* Makes days perfectly square */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 0.5px solid #fafafa;
+    transition: background 0.2s;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.prevDay {
+    background-color: azure;
+}
+
+.nextDay {
+    background-color: azure;
+}
+
+.day:hover {
+    background-color: #f0f7ff;
+}
+
+.current-day {
+    background-color: #94c0ec;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.event-dot {
+    width: 4px;
+    height: 4px;
+    background: #007bff;
+    border-radius: 50%;
+    margin-top: 2px;
+}
+
+.padding {
+    background-color: #fcfcfc;
+    cursor: default;
+}

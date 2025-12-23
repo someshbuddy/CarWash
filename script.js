@@ -75,19 +75,34 @@ function setDate(index, year) {
 }
 
 // Execution
-let currentDate = new Date();
-let currentYear = currentDate.getFullYear();
-let currentMonth = currentDate.getMonth() + 1;
-renderCalendar(currentMonth, currentYear);
+let currentYear = 0;
+let currentMonth = 0;
 
-let lastScrollTop = 0;
-window.addEventListener("scroll", function () {
-    let st = window.pageYOffset || document.documentElement.scrollTop;
-
-    if (st > lastScrollTop) {
-        renderCalendar(currentMonth--, currentYear--);
-    } else if (st < lastScrollTop) {
-        renderCalendar(currentMonth++, currentYear++);
+function prev() {
+    currentMonth--;
+    if (currentMonth == 0) {
+        currentMonth = 12;
+        currentYear--;
     }
-    lastScrollTop = st <= 0 ? 0 : st; // For mobile or negative scrolling
-}, false);
+    renderCalendar(currentMonth, currentYear);
+}
+
+function next() {
+    console.log(currentMonth)
+    currentMonth++;
+    if (currentMonth == 13) {
+        currentMonth = 1;
+        currentYear++;
+    }
+    renderCalendar(currentMonth, currentYear);
+
+}
+
+function currentStatus() {
+    let currentDate = new Date();
+    currentYear = currentDate.getFullYear();
+    currentMonth = currentDate.getMonth() + 1;
+    renderCalendar(currentMonth, currentYear);
+}
+
+currentStatus();

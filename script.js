@@ -1,6 +1,4 @@
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-const MEMBERS = ["Divakar", "Bhaskar", "Aditya", "Dinesh", "Somesh", "Vijay", "Dinakar"];
 const ROSTER_START_DATE = new Date(2025, 11, 21);
 
 const MS_TIME = 1000 * 60 * 60 * 24;

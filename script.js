@@ -1,6 +1,19 @@
-const MEMBERS = ["Somesh", "Dinesh", "Divakar", "Vijay", "Dinakar", "Bhaskar", "Aditya"];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+const MEMBERS = ["Divakar", "Bhaskar", "Aditya", "Dinesh", "Somesh", "Vijay", "Dinakar"];
 const ROSTER_START_DATE = new Date(2025, 11, 21);
+
+const MS_TIME = 1000 * 60 * 60 * 24;
+let CHANGES = [
+    {
+        endDate: new Date(2025, 11, 27).setHours(0, 0, 0, 0),
+        members: ["Somesh", "Dinesh", "Divakar", "Vijay", "Dinakar", "Bhaskar", "Aditya"]
+    },
+    {
+        endDate: new Date(2026, 11, 28).setHours(0, 0, 0, 0),
+        members: ["Divakar", "Bhaskar", "Aditya", "Dinesh", "Somesh", "Vijay", "Dinakar"]
+    }
+]
 
 let state = {
     currentMonth: new Date().getMonth() + 1,
@@ -13,8 +26,15 @@ const getMemberForDate = (date) => {
     const start = new Date(ROSTER_START_DATE).setHours(0, 0, 0, 0);
     const target = new Date(date).setHours(0, 0, 0, 0);
 
-    const diffDays = Math.floor((target - start) / (1000 * 60 * 60 * 24));
-    return diffDays >= 0 ? MEMBERS[diffDays % MEMBERS.length] : '';
+    if (target < start) return '';
+
+    const diffDays = Math.floor((target - start) / MS_TIME);
+
+    for (const change of CHANGES) {
+        if (change.endDate >= target) {
+            return change.members[diffDays % change.members.length];
+        }
+    }
 };
 
 function renderCalendar() {
